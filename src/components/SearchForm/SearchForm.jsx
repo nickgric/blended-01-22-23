@@ -1,10 +1,17 @@
 import { useState } from 'react';
+import { nanoid } from 'nanoid';
+import { selectTodos } from 'redux/todos/todosSelectors';
+import { useDispatch, useSelector } from 'react-redux';
+import { addTodo } from 'redux/todos/todosSlice';
 
 import { FiSearch } from 'react-icons/fi';
 import { FormBtn, InputSearch, SearchFormStyled } from './SearchForm.styled';
 
-export const SearchForm = ({ onSubmit }) => {
+export const SearchForm = () => {
   const [query, setQuery] = useState('');
+  const todos = useSelector(selectTodos);
+
+  const dispatch = useDispatch();
 
   const handleInput = e => {
     setQuery(e.currentTarget.value);
@@ -12,7 +19,12 @@ export const SearchForm = ({ onSubmit }) => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    onSubmit(query);
+    const isExist = todos.find(todo => todo.text === query);
+    if (isExist) {
+      alert('Такая запись уже есть ');
+      return;
+    }
+    dispatch(addTodo({ text: query, id: nanoid() }));
     setQuery('');
   };
 
